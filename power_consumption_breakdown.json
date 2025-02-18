@@ -1,0 +1,16 @@
+{
+    "zone": "US-TEN-TVA",
+    "nuclear": 4672,
+    "geothermal": 0,
+    "biomass": 0,
+    "coal": 3324,
+    "wind": 0,
+    "solar": 169,
+    "hydro": 2725,
+    "gas": 8544,
+    "oil": 0,
+    "unknown": 48,
+    "hydro_discharge": 0,
+    "battery_discharge": 0,
+    "updated_at": "2025-02-18T19:41:18.737Z"
+}
