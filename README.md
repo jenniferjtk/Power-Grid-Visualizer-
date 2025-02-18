@@ -12,8 +12,7 @@ This project fetches realtime electricity grid data from the Electricity Maps AP
 
 
  File Structure:
-
-📁 ElectricityGrid/
+ ElectricityGrid/
 ├── fetchAPI.py   Script to fetch electricity grid data & save as CSV
 ├── power_consumption_breakdown.csv   Latest power breakdown data
 ├── carbon_intensity.csv   Latest carbon intensity data
