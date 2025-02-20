@@ -2,6 +2,13 @@ import requests  # Allows Python to make API calls to retrieve data from web ser
 import json  # Enables working with JSON data (reading, writing, parsing)
 import pandas as pd  # Enables data analysis and manipulation in tabular form
 import sqlite3  # SQLite for optional live data export functionality  
+import os
+from dotenv import load_dotenv # 
+
+load_dotenv() # load variables
+
+API_KEY = os.getenv("API_KEY") # get the sensitive vars from .env file
+ZONE = os.getenv("ZONE")
 
 # ----------------------------
 # Connect to SQLite Database
@@ -44,8 +51,6 @@ conn.commit()  # Save the table creation
 # Function to Fetch Data from Electricity Maps API
 # ---------------------------
 def fetch_data(data_type):
-    API_KEY = "jRRULplDqqvZDxzv300Y"  # Replace with your actual API key
-    ZONE = "US-TEN-TVA"  # Define geographic ZONE where data is pulled from 
     API_URL = f"https://api.electricitymap.org/v3/{data_type}/latest?zone={ZONE}"  # Format API URL request
     headers = {"auth-token": API_KEY}  # Define the headers for authentication (API key is passed as a token)
     response = requests.get(API_URL, headers=headers)  # Make a request to the API and retrieve the response

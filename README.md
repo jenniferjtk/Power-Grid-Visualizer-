@@ -1,13 +1,14 @@
  Power Grid Visualizer
 
  Overview
-This project fetches real-time electricity grid data from the Electricity Maps API, processes it, and stores it in CSV format, Pandas DataFrames, and an SQLite database for further analysis. The data can be visualized using tools like Power BI, Excel, or other data visualization software.
+This project fetches real-time electricity grid data from the Electricity Maps API, processes it, and stores it in CSV format, Pandas DataFrames, and an SQLite database for further analysis. The data can be visualized using tools like Power BI, Excel, or other data visualization software. The project now utilizes an .env file to securely store API keys and database configurations.
 
  Features:
  Fetches Carbon Intensity Data (gCO2/kWh)
  Fetches Power Consumption Breakdown (Nuclear, Coal, Wind, Solar, etc.)
  Saves data to CSV files for external analysis
  Can be expanded to support other regions
+ Uses environment variables for secure API key management
 
 
 
@@ -17,6 +18,8 @@ This project fetches real-time electricity grid data from the Electricity Maps A
 |-- power_consumption_breakdown.csv   Latest power breakdown data
 |-- carbon_intensity.csv   Latest carbon intensity data
 |-- queryDB.py   Script to read and display CSV data
+|-- scheduleFetchAPI.py Script to auto-run fetchAPI.py every 10 min
+|-- .env Stores API keys and database configuration (excluded in .gitignore)
 |-- .gitignore   Excludes unnecessary files like venv/
 |-- README.md   Project documentation
 
@@ -34,8 +37,13 @@ cd PowerGridVisualizer
 bash
 pip install requests pandas
 
+3. Configure Environment Variables
+Create a .env file in the project directory and add the following:
+API_KEY="your_api_key_here"
+DATABASE_URL="sqlite:///electricity_data.db"
+ZONE="US-TEN-TVA"
 
- 3. Run the Script to Fetch Data
+ 4. Run the Script to Fetch Data
 bash
 python3 fetchAPI.py
 
@@ -45,13 +53,13 @@ This will:
     Save it to CSV files (carbon_intensity.csv, power_consumption_breakdown.csv)
     Store data in an SQLite database (electricity_data.db)
 
- 4. View Data Stored in SQLite
+ 5. View Data Stored in SQLite
  python3 queryDB.py  
 
 This will:
     display Power Consumption Breakdown and Carbon Intensity data stored in the SQLite database.
  
-5. Load Data into Power BI, Excel, or SQL-based tools
+6. Load Data into Power BI, Excel, or SQL-based tools
  Using CSV Data:
     Open a tool such as Power BI, Excel, or another data visualization software.
     Import carbon_intensity.csv and power_consumption_breakdown.csv.
