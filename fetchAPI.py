@@ -1,55 +1,84 @@
 import requests  # Allows Python to make API calls to retrieve data from web services
 import json  # Enables working with JSON data (reading, writing, parsing)
 import pandas as pd  # Enables data analysis and manipulation in tabular form
+import sqlite3  # SQLite for optional live data export functionality  
+
+# ----------------------------
+# Connect to SQLite Database
+# ----------------------------
+conn = sqlite3.connect("electricity_data.db")  # Connect to SQLite
+cursor = conn.cursor()  # Create a cursor object for executing SQL queries
+
+# ----------------------------
+# Create Tables IF NOT already Exist
+# ----------------------------
+cursor.execute("""
+  CREATE TABLE IF NOT EXISTS CarbonIntensity (
+    zone TEXT,
+    carbon_intensity INTEGER,
+    updated_at TEXT
+  )
+""")
+
+cursor.execute("""
+  CREATE TABLE IF NOT EXISTS PowerConsumptionBreakdown (
+    zone TEXT,
+    nuclear INTEGER,
+    geothermal INTEGER,
+    biomass INTEGER,
+    coal INTEGER,
+    wind INTEGER,
+    solar INTEGER,
+    hydro INTEGER,
+    gas INTEGER,
+    oil INTEGER,
+    unknown INTEGER,
+    hydro_discharge INTEGER,
+    battery_discharge INTEGER,
+    updated_at TEXT
+  )
+""")
+conn.commit()  # Save the table creation
 
 # ---------------------------
 # Function to Fetch Data from Electricity Maps API
-# This function is used to retrieve data for either carbon intensity or power consumption breakdown.
-# It constructs the appropriate API URL and returns the JSON response.
 # ---------------------------
 def fetch_data(data_type):
-    """
-    Fetch data from Electricity Maps API based on the requested type.
-    :param data_type: 'carbon-intensity' or 'power-consumption-breakdown'
-    :return: JSON response data
-    """
-    
-    # Define API key for authentication (required to access API data)
     API_KEY = "jRRULplDqqvZDxzv300Y"  # Replace with your actual API key
-    
-    # Define the geographic zone for which we are retrieving data (Tennessee Valley Authority region)
-    ZONE = "US-TEN-TVA"
-    
-    # Construct the API request URL with the specified data type
-    API_URL = f"https://api.electricitymap.org/v3/{data_type}/latest?zone={ZONE}"
-    
-    # Define the headers for authentication (API key is passed as a token)
-    headers = {"auth-token": API_KEY}
-    
-    # Make a request to the API and retrieve the response
-    response = requests.get(API_URL, headers=headers)
-    
-    # Convert the response data from JSON format to a Python dictionary and return it
-    return response.json()
+    ZONE = "US-TEN-TVA"  # Define geographic ZONE where data is pulled from 
+    API_URL = f"https://api.electricitymap.org/v3/{data_type}/latest?zone={ZONE}"  # Format API URL request
+    headers = {"auth-token": API_KEY}  # Define the headers for authentication (API key is passed as a token)
+    response = requests.get(API_URL, headers=headers)  # Make a request to the API and retrieve the response
+    print(json.dumps(response.json(), indent=4))  # Print API response for debugging
+    return response.json()  # Convert response data to Python dictionary
 
 # ---------------------------
 # Fetch Carbon Intensity Data
-# Retrieves and structures the latest carbon intensity data for the specified region.
 # ---------------------------
-carbon_data = fetch_data("carbon-intensity")
-carbon_entry = {
-    "zone": "US-TEN-TVA",  # The electricity region being analyzed
-    "carbon_intensity": carbon_data["carbonIntensity"],  # The current carbon intensity value in gCO2eq/kWh
-    "updated_at": carbon_data["updatedAt"]  # The timestamp for when the data was last updated
+carbon_data = fetch_data("carbon-intensity") #raw JSON response form API (not formatted)
+carbon_entry = { # create a dictionary containing only the relevant fields wanted
+    "zone": "US-TN-TVA",
+    "carbon_intensity": carbon_data["carbonIntensity"],
+    "updated_at": carbon_data["updatedAt"]
 }
+
+# Insert Carbon Intensity into SQLite**
+cursor.execute("""
+    INSERT INTO CarbonIntensity (zone, carbon_intensity, updated_at)
+    VALUES (?, ?, ?)
+""", (carbon_entry["zone"], carbon_entry["carbon_intensity"],carbon_entry["updated_at"]))
 
 # ---------------------------
 # Fetch Power Consumption Breakdown Data
-# Retrieves and structures the latest power source breakdown for the specified region.
 # ---------------------------
 power_data = fetch_data("power-consumption-breakdown")
+
+# Extract power breakdown values safely
+# Use .get() to extract the specific key pairs from PowerConsumptionBreakdown
+# Logic: IF key "nuclear" is found in the dictionary, the value pair will be returned
+# IF key is NOT found, just return 0
 power_entry = {
-    "zone": "US-TEN-TVA",  # The electricity region being analyzed
+    "zone": "US-TEN-TVA",
     "nuclear": power_data["powerConsumptionBreakdown"].get("nuclear", 0),
     "geothermal": power_data["powerConsumptionBreakdown"].get("geothermal", 0),
     "biomass": power_data["powerConsumptionBreakdown"].get("biomass", 0),
@@ -62,29 +91,30 @@ power_entry = {
     "unknown": power_data["powerConsumptionBreakdown"].get("unknown", 0),
     "hydro_discharge": power_data["powerConsumptionBreakdown"].get("hydro discharge", 0),
     "battery_discharge": power_data["powerConsumptionBreakdown"].get("battery discharge", 0),
-    "updated_at": power_data["updatedAt"]  # The timestamp for when the data was last updated
+    "updated_at": power_data["updatedAt"]
 }
 
-# ---------------------------
-# Save Data to JSON Files
-# This allows for easy reference and debugging by storing data locally.
-# ---------------------------
-with open("carbon_intensity.json", "w") as file:
-    json.dump(carbon_entry, file, indent=4)  # Writes carbon intensity data to a JSON file in a readable format
-
-with open("power_consumption_breakdown.json", "w") as file:
-    json.dump(power_entry, file, indent=4)  # Writes power breakdown data to a JSON file in a readable format
+# Insert Power Consumption into SQLite
+cursor.execute("""
+    INSERT INTO PowerConsumptionBreakdown 
+    (zone, nuclear, geothermal, biomass, coal, wind, solar, hydro, gas, oil, unknown, hydro_discharge, battery_discharge, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+""", (
+    power_entry["zone"], power_entry["nuclear"], power_entry["geothermal"], power_entry["biomass"],
+    power_entry["coal"], power_entry["wind"], power_entry["solar"], power_entry["hydro"],
+    power_entry["gas"], power_entry["oil"], power_entry["unknown"], power_entry["hydro_discharge"],
+    power_entry["battery_discharge"], power_entry["updated_at"]
+))
 
 # ---------------------------
 # Save Data to CSV Files
 # ---------------------------
+pd.DataFrame([carbon_data]).to_csv("carbon_intensity.csv", index=False)
+pd.DataFrame([power_entry]).to_csv("power_consumption_breakdown.csv", index=False)
 
-# Convert Carbon Intensity Data to Pandas DataFrame and save to CSV
-carbon_df = pd.DataFrame([carbon_entry])
-carbon_df.to_csv("carbon_intensity.csv", index=False)  # Save as CSV file
+# Commit and Close Database Connection
+conn.commit()
+cursor.close()
+conn.close()
 
-# Convert Power Consumption Breakdown Data to Pandas DataFrame and save to CSV
-power_df = pd.DataFrame([power_entry])
-power_df.to_csv("power_consumption_breakdown.csv", index=False)  # Save as CSV file
-
-print("Carbon Intensity and Power Consumption Breakdown data successfully stored in CSV files.")
+print("Data successfully stored in SQLite & CSV files!")

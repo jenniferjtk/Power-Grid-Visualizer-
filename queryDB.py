@@ -1,19 +1,27 @@
-import sqlite3  # Import SQLite to connect to the database
-import pandas as pd  # Import Pandas to organize data in tables
+import sqlite3
+import pandas as pd
 
 # ---------------------------
 # Connect to the SQLite Database
 # ---------------------------
-conn = sqlite3.connect("electricity_data.db")  # Connect to the database file
+conn = sqlite3.connect("electricity_data.db")  # Connect to SQLite
+cursor = conn.cursor()
 
 # ---------------------------
-# Read Power Consumption Breakdown Data from Database
+# Read Power Consumption Breakdown Data
 # ---------------------------
-df = pd.read_sql("SELECT * FROM PowerConsumptionBreakdown", conn)  # Run SQL query and store results in Pandas DataFrame
+df = pd.read_sql("SELECT * FROM PowerConsumptionBreakdown", conn)  # Query database and store results
 
-# Print the data in a readable format
-print("\nPower Consumption Breakdown Data:")
+# Print Data
+print("\n Power Consumption Breakdown Data:")
 print(df)
 
-# Close the database connection
+# ---------------------------
+# Read Carbon Intensity Data
+# ---------------------------
+df_carbon = pd.read_sql("SELECT * FROM CarbonIntensity", conn)  # Query Carbon Intensity Data
+print("\n Carbon Intensity Data:")
+print(df_carbon)
+
+# Close Connection
 conn.close()

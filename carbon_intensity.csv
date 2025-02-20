@@ -1,2 +1,2 @@
-zone,carbon_intensity,updated_at
-US-TEN-TVA,435,2025-02-18T19:41:18.737Z
+zone,carbonIntensity,datetime,updatedAt,createdAt,emissionFactorType,isEstimated,estimationMethod
+US-TEN-TVA,469,2025-02-20T21:00:00.000Z,2025-02-20T18:42:10.645Z,2025-02-17T21:42:27.481Z,lifecycle,True,TIME_SLICER_AVERAGE

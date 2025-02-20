@@ -1,16 +1,30 @@
 {
     "zone": "US-TEN-TVA",
-    "nuclear": 4672,
+    "powerConsumptionBreakdown": {
+        "nuclear": 4674,
+        "geothermal": 0,
+        "biomass": 0,
+        "coal": 4115,
+        "wind": 0,
+        "solar": 504,
+        "hydro": 2583,
+        "gas": 11574,
+        "oil": 0,
+        "unknown": 41,
+        "hydro discharge": 0,
+        "battery discharge": 0
+    },
+    "nuclear": 4674,
     "geothermal": 0,
     "biomass": 0,
-    "coal": 3324,
+    "coal": 4115,
     "wind": 0,
-    "solar": 169,
-    "hydro": 2725,
-    "gas": 8544,
+    "solar": 504,
+    "hydro": 2583,
+    "gas": 11574,
     "oil": 0,
-    "unknown": 48,
+    "unknown": 41,
     "hydro_discharge": 0,
     "battery_discharge": 0,
-    "updated_at": "2025-02-18T19:41:18.737Z"
+    "updated_at": "2025-02-20T16:43:50.344Z"
 }
