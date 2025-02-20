@@ -52,4 +52,8 @@ This will create carbon_intensity.csv and power_consumption_breakdown.csv in you
  Line Chart → Plot Carbon Intensity Over Time using `updated_at` as Xaxis and `carbon_intensity` as Yaxis.
  Bar Chart → Show Power Consumption Breakdown with energy sources (`nuclear`, `coal`, `solar`, etc.) as Xaxis and their values as Yaxis.
 
+ Note: You can view the example visual in the root directory as a png entitled PowerGridVisual.png!
+
+Data ODbl 
+Electricity Maps (2025). {COUNTRY NAME} {YEAR} {INTERVAL} Carbon Intensity Data (Version January 27, 2025). Electricity Maps. https://www.electricitymaps.com
 
