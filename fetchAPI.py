@@ -78,7 +78,7 @@ power_data = fetch_data("power-consumption-breakdown")
 # Logic: IF key "nuclear" is found in the dictionary, the value pair will be returned
 # IF key is NOT found, just return 0
 power_entry = {
-    "zone": "US-TN-TVA",
+    "zone": "US-TEN-TVA",
     "nuclear": power_data["powerConsumptionBreakdown"].get("nuclear", 0),
     "geothermal": power_data["powerConsumptionBreakdown"].get("geothermal", 0),
     "biomass": power_data["powerConsumptionBreakdown"].get("biomass", 0),
