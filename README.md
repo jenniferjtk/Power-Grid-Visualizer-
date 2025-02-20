@@ -54,6 +54,6 @@ This will create carbon_intensity.csv and power_consumption_breakdown.csv in you
 
  Note: You can view the example visual in the root directory as a png entitled PowerGridVisual.png!
 
-
-
+Data ODbl 
+Electricity Maps (2025). {COUNTRY NAME} {YEAR} {INTERVAL} Carbon Intensity Data (Version January 27, 2025). Electricity Maps. https://www.electricitymaps.com
 
