@@ -62,6 +62,15 @@ carbon_entry = { # create a dictionary containing only the relevant fields wante
     "updated_at": carbon_data["updatedAt"]
 }
 
+# Create A ZONE dictionary to remove mismatched data from JSON API response
+zone_dict = {
+     "US-TN-TVA" : "US-TEN-TVA"
+    }
+
+# Checks IF value is found in zone_dict, IF yes replace with mapped value, ELSE
+# leave value unchanged (default) 
+carbon_entry["zone"] = zone_dict.get(carbon_entry["zone"], carbon_entry["zone"])
+
 # Insert Carbon Intensity into SQLite**
 cursor.execute("""
     INSERT INTO CarbonIntensity (zone, carbon_intensity, updated_at)
@@ -73,10 +82,12 @@ cursor.execute("""
 # ---------------------------
 power_data = fetch_data("power-consumption-breakdown")
 
+
 # Extract power breakdown values safely
-# Use .get() to extract the specific key pairs from PowerConsumptionBreakdown
+# Use .get() to extract the specific key from PowerConsumptionBreakdown
 # Logic: IF key "nuclear" is found in the dictionary, the value pair will be returned
 # IF key is NOT found, just return 0
+# Prevents crashing if value not found 
 power_entry = {
     "zone": "US-TEN-TVA",
     "nuclear": power_data["powerConsumptionBreakdown"].get("nuclear", 0),
@@ -93,6 +104,9 @@ power_entry = {
     "battery_discharge": power_data["powerConsumptionBreakdown"].get("battery discharge", 0),
     "updated_at": power_data["updatedAt"]
 }
+
+# Same check for power_entry zone 
+power_entry ["zone"] = zone_dict.get(power_entry["zone"], power_entry["zone"])
 
 # Insert Power Consumption into SQLite
 cursor.execute("""
