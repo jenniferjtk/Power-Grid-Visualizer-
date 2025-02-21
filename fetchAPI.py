@@ -10,6 +10,10 @@ load_dotenv() # load variables
 API_KEY = os.getenv("API_KEY") # get the sensitive vars from .env file
 ZONE = os.getenv("ZONE")
 
+# Raise value error for missing variables 
+if not API_KEY or not ZONE:
+    raise ValueError("Missing API_KEY or ZONE")
+
 # ----------------------------
 # Connect to SQLite Database
 # ----------------------------
@@ -53,10 +57,13 @@ conn.commit()  # Save the table creation
 def fetch_data(data_type):
     API_URL = f"https://api.electricitymap.org/v3/{data_type}/latest?zone={ZONE}"  # Format API URL request
     headers = {"auth-token": API_KEY}  # Define the headers for authentication (API key is passed as a token)
-    response = requests.get(API_URL, headers=headers)  # Make a request to the API and retrieve the response
-    print(json.dumps(response.json(), indent=4))  # Print API response for debugging
-    return response.json()  # Convert response data to Python dictionary
-
+    try:
+      response = requests.get(API_URL, headers=headers)  # Make a request to the API and retrieve the response
+      print(json.dumps(response.json(), indent=4))  # Print API response for debugging
+      return response.json()  # Convert response data to Python dictionary
+    except requests.exceptions.RequestException as e: # As e creates instance of RequestException class
+       print(f"Error when requesting API: {e}") # Use F-string to print out the specific error
+       return None
 # ---------------------------
 # Fetch Carbon Intensity Data
 # ---------------------------
